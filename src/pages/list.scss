@@ -1,0 +1,63 @@
+.App {
+    background-color: #f5f5f961;
+    height: 100%;
+
+    .pageWrapper {
+        width: 90%;
+        margin: auto;
+        padding-top: 20px;
+    }
+
+    .table {
+        margin: auto;
+        margin-top: 30px;
+    }
+
+    .align-end {
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #2c3034;
+        border-radius: 0.375rem;
+        color: #ffffff;
+    }
+
+    th:nth-child(2),
+    th:nth-child(3) {
+        text-align: center;
+    }
+
+    .no-data {
+        height: calc(100vh - 68px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        i {
+            margin-inline: 6px;
+            color: #0000008f;
+            cursor: pointer;
+        }
+    }
+
+    .scrollButton {
+        height: 50px;
+        position: fixed;
+        top: 92%;
+        width: 50px;
+        right: 7px;
+        border-radius: 50%;
+        border: 1px solid #dee2e6;
+        background-color: #dee2e61f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-inline: 5px;
+
+        svg {
+            height: 100%;
+            width: 100%;
+        }
+    }
+}
