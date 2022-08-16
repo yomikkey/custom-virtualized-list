@@ -8,6 +8,9 @@ import { CustomButton } from "../components/CustomButton";
 import Loader from "../components/loader";
 import { CustomInput } from "../components/CustomInput";
 import { UpCircleArrow } from "../assets/icons/upCircleArrow";
+import { useBottomScrollListener } from 'react-bottom-scroll-listener';
+import VirtualizedList from "../components/VirtulizedList";
+import { fakeData } from "../util/faker";
 
 type ListProps = {}
 type wordDataType = {
@@ -24,6 +27,11 @@ type dataType = {
 const List = (props: ListProps) => {
     const [show, setShow] = useState<boolean>(false);
     const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [offset, setOffset] = useState<number>(0);
+    const [visibledataoffset, setVisibledataoffset] = useState<number>(0);
+    const [pageYOffset, setPageYOffset] = useState<number>(0);
+    const [visibledata, setVisibledata] = useState<wordDataType[]>([]);
+
     const [data, setData] = useState<dataType>({
         dataList: [],
         loading: true,
@@ -37,37 +45,30 @@ const List = (props: ListProps) => {
     });
 
     useEffect(() => {
-        document.title = 'Virtualized List';
         try {
-            setData({ dataList: [], loading: true, total: 1 });
-
-            const words: string = faker.random.words(10000);
-            const objArr = words.split(" ").map((item, id) => ({
-                name: item.toUpperCase(),
-                id: id + 1,
-                acronym: item.slice(0, 2).toLocaleUpperCase(),
-            }));
-
+            const objArr = fakeData();
             setData({ dataList: objArr, loading: false, total: objArr.length + 1 });
         } catch (e: any) {
             setData({ dataList: [], loading: false, total: 0 });
-            console.log(e.error);
         }
     }, []);
 
-    useEffect(() => {
-        // Button is displayed after scrolling for 500 pixels
-        const toggleVisibility = () => {
-            if (window.pageYOffset > 500) {
-                setIsVisible(true);
-            } else {
-                setIsVisible(false);
-            }
-        };
-        window.addEventListener("scroll", toggleVisibility);
 
-        return () => window.removeEventListener("scroll", toggleVisibility);
-    }, []);
+
+    // const initialRender = () => {
+    //     setVisibledata(data.dataList.slice(0, 30));
+    // }
+
+    // useBottomScrollListener(() => {
+    //     // let newOffset = offset + 10000;
+    //     // setOffset(newOffset);
+    //     console.log("scrolled to bottom 1");
+        
+    // }, {
+    //     offset: 0,
+    //     debounce: 0,
+    //     triggerOnNoScroll: true,
+    // });
 
     // const renderTooltip = (props) => (
     //     <Tooltip id="button-tooltip" {...props}>
@@ -108,9 +109,6 @@ const List = (props: ListProps) => {
         }
     };
 
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    };
 
     return (
         <React.Fragment>
@@ -133,46 +131,7 @@ const List = (props: ListProps) => {
                 </Row>
                 {!data.loading ? (
                     data?.dataList ? (
-                        <Row>
-                            <Table bordered striped hover>
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Word</th>
-                                        <th>Acronym</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {data?.dataList.map((key) => (
-                                        <tr key={key.acronym + key.id}>
-                                            <td>{key.id}</td>
-                                            <td align="center">{key.name}</td>
-                                            <td align="center">{key.acronym}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
-
-                            {isVisible && (
-                                <OverlayTrigger
-                                    placement="top"
-                                    overlay={
-                                        <Tooltip id="button-tooltip-2">Scroll to Top</Tooltip>
-                                    }
-                                >
-                                    {({ ref, ...triggerHandler }) => (
-                                        <button
-                                            className="scrollButton"
-                                            onClick={scrollToTop}
-                                            {...triggerHandler}
-                                            ref={ref}
-                                        >
-                                            <UpCircleArrow />
-                                        </button>
-                                    )}
-                                </OverlayTrigger>
-                            )}
-                        </Row>
+                        <VirtualizedList data={data} />
                     ) : (
                         <div className="no-data">
                             <h5>
@@ -188,6 +147,7 @@ const List = (props: ListProps) => {
                     <Loader />
                 )}
             </div>
+
             <Modal show={show} centered onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Add New Word</Modal.Title>
